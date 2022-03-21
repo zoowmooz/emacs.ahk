@@ -11,6 +11,8 @@ SetKeyDelay 0
 is_pre_x = 0
 ; turns to be 1 when ctrl-space is pressed
 is_pre_spc = 0
+; turns to be 1 when ctrl-q is pressed
+is_pre_q = 0
 
 ; Applications you want to disable emacs-like keybindings
 ; (Please comment out applications you don't use)
@@ -18,9 +20,13 @@ is_target()
 {
   IfWinActive,ahk_class ConsoleWindowClass ; Cygwin
     Return 1 
-  IfWinActive,ahk_class MEADOW ; Meadow
+;  IfWinActive,ahk_class MEADOW ; Meadow
+;    Return 1 
+  IfWinActive,ahk_class Emacs
     Return 1 
   IfWinActive,ahk_class cygwin/x X rl-xterm-XTerm-0
+    Return 1
+  IfWinActive,ahk_class mintty
     Return 1
   IfWinActive,ahk_class MozillaUIWindowClass ; keysnail on Firefox
     Return 1
@@ -39,7 +45,12 @@ is_target()
 ;     Return 1  
 ;   IfWinActive,ahk_class XEmacs ; XEmacs on Cygwin
 ;     Return 1
-  Return 0
+  If is_pre_q
+  {
+    is_pre_q = 0
+    Return 1
+  }
+Return 0
 }
 
 delete_char()
@@ -220,6 +231,14 @@ scroll_down()
   Return
 }
 
+
+^q::
+ If is_target()
+    Send %A_ThisHotkey%
+;    global is_pre_q = 0
+Else
+    global is_pre_q = 1
+ Return
 
 ^x::
   If is_target()
@@ -403,4 +422,3 @@ scroll_down()
   Else
     scroll_up()
   Return
-
